@@ -33,10 +33,11 @@ class ShazamDiscoveryCanadaSpider(scrapy.Spider):
         replacements = [" \(Remix\)", " [\(\[].*?[\)\]]", " ft.*", " Aka.*", " feat.*", " FT.*", ",.*"]
         for item in data['chart']:
             parsed_title = item['heading']['title']
-            if r == " \(Remix\)":
-                parsed_title = re.sub(r, " Remix", parsed_title)
-            else:
-                parsed_title = re.sub(r, "", parsed_title)
+            for r in replacements:
+                if r == " \(Remix\)":
+                    parsed_title = re.sub(r, " Remix", parsed_title)
+                else:
+                    parsed_title = re.sub(r, "", parsed_title)
             yield {
                 'title': parsed_title,
                 'artist': item['heading']['subtitle']

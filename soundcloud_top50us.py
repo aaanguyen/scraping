@@ -32,7 +32,8 @@ class SoundcloudTop50usSpider(scrapy.Spider):
 
         for item in data['collection']:
             parsed_title = item['track']['title'].split(" - ")[-1]
-            if r == " \(Remix\)":
+            for r in replacements:
+                if r == " \(Remix\)":
                     parsed_title = re.sub(r, " Remix", parsed_title)
                 else:
                     parsed_title = re.sub(r, "", parsed_title)
