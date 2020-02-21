@@ -37,7 +37,7 @@ def populate(sp, playlist_id, data, all_track_ids):
                 continue
         if idx < 100 and id_to_add not in first_100_ids:
             first_100_ids.append(id_to_add)
-        else:
+        elif idx >= 100 and id_to_add not in second_100_ids:
             second_100_ids.append(id_to_add)
 
     scope = 'playlist-modify-public'

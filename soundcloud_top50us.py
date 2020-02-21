@@ -28,12 +28,14 @@ class SoundcloudTop50usSpider(scrapy.Spider):
     def parse_api(self, response):
         raw_data = response.body
         data = json.loads(raw_data)
-        replacements = [" [\(\[].*?[\)\]]", " ft.*", " Aka.*", " feat.*", " FT.*", ",.*"]
+        replacements = [" \(Remix\)", " [\(\[].*?[\)\]]", " ft.*", " Aka.*", " feat.*", " FT.*", ",.*"]
 
         for item in data['collection']:
             parsed_title = item['track']['title'].split(" - ")[-1]
-            for r in replacements:
-                parsed_title = re.sub(r, "", parsed_title)
+            if r == " \(Remix\)":
+                    parsed_title = re.sub(r, " Remix", parsed_title)
+                else:
+                    parsed_title = re.sub(r, "", parsed_title)
             if 'artist' in item['track']['publisher_metadata'] and item['track']['publisher_metadata']['artist']:
                 artist = item['track']['publisher_metadata']['artist']
             elif item['track']['user']['username']:

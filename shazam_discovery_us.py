@@ -32,8 +32,10 @@ class ShazamDiscoveryUsSpider(scrapy.Spider):
         data = json.loads(raw_data)
         for item in data['chart']:
             parsed_title = item['heading']['title']
-            replacements = [" [\(\[].*?[\)\]]", " ft.*", " Aka.*", ",.*"]
-            for r in replacements:
+            replacements = [" \(Remix\)", " [\(\[].*?[\)\]]", " ft.*", " Aka.*", " feat.*", " FT.*", ",.*"]
+            if r == " \(Remix\)":
+                parsed_title = re.sub(r, " Remix", parsed_title)
+            else:
                 parsed_title = re.sub(r, "", parsed_title)
             yield {
                 'title': parsed_title,
