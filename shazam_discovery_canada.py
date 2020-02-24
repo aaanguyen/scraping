@@ -30,12 +30,12 @@ class ShazamDiscoveryCanadaSpider(scrapy.Spider):
     def parse_api(self,response):
         raw_data = response.body
         data = json.loads(raw_data)
-        replacements = [" \(Remix\)", " [\(\[].*?[\)\]]", " ft.*", " Aka.*", " feat.*", " FT.*", ",.*"]
+        replacements = [" \(remix\)", " [\(\[].*?[\)\]]", " ft.*", " aka.*", " feat.*", ",.*"]
         for item in data['chart']:
-            parsed_title = item['heading']['title']
+            parsed_title = item['heading']['title'].lower()
             for r in replacements:
-                if r == " \(Remix\)":
-                    parsed_title = re.sub(r, " Remix", parsed_title)
+                if r == " \(remix\)":
+                    parsed_title = re.sub(r, " remix", parsed_title)
                 else:
                     parsed_title = re.sub(r, "", parsed_title)
             yield {

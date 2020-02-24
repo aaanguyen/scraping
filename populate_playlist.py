@@ -8,6 +8,7 @@ playlists = {
     'shazam_discovery_us': '4B2hxmDkBW1Hux2NcVp7hU',
     'shazam_discovery_canada': '3fG26aIk6OqSwo7nS0iWJH',
     'shazam_top200us': '0pw4biduKpuwd0qXUHD3q5',
+    'shazam_top200global': '5qCPfLBzsHNceDeb7radxH',
     'soundcloud_newandhotUS': '4PURPAQZ4wzH6VnPZWkHUd',
     'soundcloud_top50us': '75Cymdvg0kSmGDJRJDEsGW',
     'youtube': ''
@@ -46,14 +47,13 @@ def populate(sp, playlist_id, data, all_track_ids):
     if token:
         sp = spotipy.Spotify(auth=token)
         sp.trace = False
+        sp.user_playlist_change_details(username, playlist_id, description="Last updated: {date}. Missing tracks: {list}".format(date=todays_date, list=", ".join(missing_tracks)))
         sp.user_playlist_replace_tracks(username, playlist_id, first_100_ids)
         if second_100_ids:
             results = sp.user_playlist_add_tracks(username, playlist_id, second_100_ids)
             print(results)
     else:
         print("Can't get token for", username)
-
-    sp.user_playlist_change_details(username, playlist_id, description="Last updated: {date}. Missing tracks: {list}".format(date=todays_date, list=", ".join(missing_tracks)))
 
 
 def main(filename):
