@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy, json, re
+from unidecode import unidecode
 
 
 class SoundcloudNewAndHotUSSpider(scrapy.Spider):
@@ -28,17 +29,23 @@ class SoundcloudNewAndHotUSSpider(scrapy.Spider):
     def parse_api(self, response):
         raw_data = response.body
         data = json.loads(raw_data)
-        replacements = [" \(remix\)", " [\(\[].*?[\)\]]", " ft.*", " aka.*", " feat.*", ",.*"]
+        replacements = [" \(remix\)", " [\(\[].*?[\)\]]", " ft.*", " aka.*", " feat.*", ",.*", " 🤷🏽‍♂️", " x "]
 
         for item in data['collection']:
-            parsed_title = item['track']['title'].lower().split(" - ")[-1]
+            parsed_title = unidecode(item['track']['title'].lower())
             publisher_metadata = item['track']['publisher_metadata']
             for r in replacements:
                 if r == " \(remix\)":
                     parsed_title = re.sub(r, " remix", parsed_title)
                 else:
-                    parsed_title = re.sub(r, "", parsed_title)
-            if 'artist' in publisher_metadata and publisher_metadata['artist']:
+                    parsed_title = re.sub(r, " ", parsed_title)
+            if " - " in parsed_title:
+                yield {
+                    'title': parsed_title,
+                    'artist': ""
+                }
+                continue
+            if publisher_metadata and 'artist' in publisher_metadata and publisher_metadata['artist']:
                 artist = publisher_metadata['artist']
             elif item['track']['user']['username']:
                 artist = item['track']['user']['username']

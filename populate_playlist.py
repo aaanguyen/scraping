@@ -23,18 +23,26 @@ def populate(sp, playlist_id, data, all_track_ids):
     missing_tracks = []
 
     for idx, item in enumerate(data):
-        title_and_artist = "-".join([item['title'],item['artist']])
+        if item['artist']:
+            title_and_artist = "-".join([item['title'],item['artist']])
+        else:
+            title_and_artist = item['title']
         if title_and_artist in all_track_ids:
             id_to_add = all_track_ids[title_and_artist]
         else:
-            q = " ".join([item['title'], item['artist'].split(" ")[0]])
+            q = " ".join([item['title'], item['artist'].split(" ")[0]]) if item['artist'] else item['title']
+            if sys.argv[1][:10] == "soundcloud":
+                q += " {}".format(str(date.today().year))
             search_result = sp.search(q,limit=1,type='track')
             if search_result['tracks']['items']:
                 print(search_result['tracks']['items'][0]['id'], search_result['tracks']['items'][0]['name'], search_result['tracks']['items'][0]['artists'][0]['name'])
                 id_to_add = search_result['tracks']['items'][0]['id']
                 all_track_ids[title_and_artist] = id_to_add
             else:
-                missing_tracks.append("{title} - {artist}".format(title=item['title'],artist=item['artist']))
+                missing_track = item['title']
+                if item['artist']:
+                    missing_track += " - {}".format(item['artist'])
+                missing_tracks.append(missing_track)
                 continue
         if idx < 100 and id_to_add not in first_100_ids:
             first_100_ids.append(id_to_add)
