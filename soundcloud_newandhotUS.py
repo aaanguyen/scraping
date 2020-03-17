@@ -23,13 +23,13 @@ class SoundcloudNewAndHotUSSpider(scrapy.Spider):
     }
 
     def parse(self, response):
-        url = 'https://api-v2.soundcloud.com/charts?kind=trending&genre=soundcloud%3Agenres%3Aall-music&region=soundcloud%3Aregions%3AUS&high_tier_only=false&client_id=qeWb21nmKO1VUDsY88W1341i7kO1JXeK&limit=50&offset=0&linked_partitioning=1&app_version=1581677269&app_locale=en'
+        url = 'https://api-v2.soundcloud.com/charts?kind=trending&genre=soundcloud%3Agenres%3Aall-music&region=soundcloud%3Aregions%3AUS&high_tier_only=false&client_id=TyQAtemcOqFFQTCV2qqy3rmP9cOn066j&limit=50&offset=0&linked_partitioning=1&app_version=1584447615&app_locale=en'
         yield scrapy.Request(url, callback=self.parse_api, headers=self.headers)
 
     def parse_api(self, response):
         raw_data = response.body
         data = json.loads(raw_data)
-        replacements = [" \(remix\)", " [\(\[].*?[\)\]]", " ft.*", " aka.*", " feat.*", ",.*", " 🤷🏽‍♂️", " x "]
+        replacements = [" \(remix\)", " [\(\[].*?[\)\]]", " ft.*", " aka.*", " feat.*", " 🤷🏽‍♂️", " x ", " #.*", "&"]
 
         for item in data['collection']:
             parsed_title = unidecode(item['track']['title'].lower())
@@ -46,7 +46,7 @@ class SoundcloudNewAndHotUSSpider(scrapy.Spider):
                 }
                 continue
             if publisher_metadata and 'artist' in publisher_metadata and publisher_metadata['artist']:
-                artist = publisher_metadata['artist']
+                artist = publisher_metadata['artist'].strip(" ")
             elif item['track']['user']['username']:
                 artist = item['track']['user']['username']
             else:

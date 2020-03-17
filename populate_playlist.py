@@ -5,18 +5,18 @@ from datetime import date
 
 
 playlists = {
-    'shazam_discovery_us': '4B2hxmDkBW1Hux2NcVp7hU',
-    'shazam_discovery_canada': '3fG26aIk6OqSwo7nS0iWJH',
-    'shazam_top200us': '0pw4biduKpuwd0qXUHD3q5',
-    'shazam_top200global': '5qCPfLBzsHNceDeb7radxH',
-    'soundcloud_newandhotUS': '4PURPAQZ4wzH6VnPZWkHUd',
-    'soundcloud_top50us': '75Cymdvg0kSmGDJRJDEsGW',
+    'shazam_discovery_us': '',
+    'shazam_discovery_canada': '',
+    'shazam_top200us': '',
+    'shazam_top200global': '',
+    'soundcloud_newandhotUS': '',
+    'soundcloud_top50us': '',
     'youtube': ''
 }
 
 
 def populate(sp, playlist_id, data, all_track_ids):
-    username = 'aa_nguyen'
+    username = ''
     todays_date = date.today()
     first_100_ids = []
     second_100_ids = []
@@ -32,7 +32,7 @@ def populate(sp, playlist_id, data, all_track_ids):
         else:
             q = " ".join([item['title'], item['artist'].split(" ")[0]]) if item['artist'] else item['title']
             if sys.argv[1][:10] == "soundcloud":
-                q += " {}".format(str(date.today().year))
+                q += " year:{}".format(str(date.today().year))
             search_result = sp.search(q,limit=1,type='track')
             if search_result['tracks']['items']:
                 print(search_result['tracks']['items'][0]['id'], search_result['tracks']['items'][0]['name'], search_result['tracks']['items'][0]['artists'][0]['name'])
@@ -60,6 +60,7 @@ def populate(sp, playlist_id, data, all_track_ids):
         if second_100_ids:
             results = sp.user_playlist_add_tracks(username, playlist_id, second_100_ids)
             print(results)
+        print("{} updated".format(sys.argv[1][:-5]))
     else:
         print("Can't get token for", username)
 
